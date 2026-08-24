@@ -24,7 +24,7 @@ class LayerNorm(nn.Module):
     normalized = (x - mean) / sqrt(variance + tiny number to tackle divisible by zero error)
     NOTE: mean, variance = integer, tiny = small decimal value, x = Tensor
     #--------------------------------
-    2. input @ weight + bias
+    2. normalised @ weight + bias
     return the input
     1e-5 = 0.00001
     """

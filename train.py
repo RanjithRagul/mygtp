@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
+from torch import Tensor
 
 class LayerNorm(nn.Module):
   def __init__(self, ndim: int, bias: bool):

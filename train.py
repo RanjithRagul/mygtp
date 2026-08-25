@@ -32,8 +32,12 @@ class CausalSelfAttention(nn.Module):
   def __init__(self, config):
     super().__init__()
     assert config.n_embd % config.n_head == 0
-    self.c_attn = nn.Linear(config.n_embd, config.n_embd * 3, bias=config.bias)
-    self.c_proj = nn.Linear(config.n_embd, config.n_embd, bias=config.bias)
+    self.n_head = config.n_head
+    self.n_embd = config.n_embd
+    self.dropout = config.dropout
+    self.bias = self.bias
+    self.c_attn = nn.Linear(self.n_embd, self.n_embd * 3, bias=self.bias)
+    self.c_proj = nn.Linear(self.n_embd, self.n_embd, bias=self.bias)
     '''
     nn.linear
     1. input @ w.T + bias
@@ -44,5 +48,5 @@ class CausalSelfAttention(nn.Module):
     '''
     # remember dropout is always between 0 - 1
     # nn.Dropout(value, inplace=True/False) -> this in place is to create a new tensor or inplace
-    self.attn_dropout = nn.Dropout(config.dropout)
-    self.resid_dropout = nn.Dropout(config.dropout)
+    self.attn_dropout = nn.Dropout(self.dropout)
+    self.resid_dropout = nn.Dropout(self.dropout)

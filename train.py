@@ -47,7 +47,7 @@ class CausalSelfAttention(nn.Module):
     5. bias = torch.randn(out_features)
     '''
     # remember dropout is always between 0 - 1
-    # nn.Dropout(value, inplace=True/False) -> this in place is to create a new tensor or inplace
+    # nn.Dropout(value, inplace=True/False) -> inplace is an optional and this inplace is to create a new tensor or inplace
     self.attn_dropout = nn.Dropout(self.dropout)
     self.resid_dropout = nn.Dropout(self.dropout)
     #------------------------------------------------------------------------

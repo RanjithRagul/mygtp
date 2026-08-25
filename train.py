@@ -50,3 +50,14 @@ class CausalSelfAttention(nn.Module):
     # nn.Dropout(value, inplace=True/False) -> this in place is to create a new tensor or inplace
     self.attn_dropout = nn.Dropout(self.dropout)
     self.resid_dropout = nn.Dropout(self.dropout)
+
+    # check our PyTorch >= 2.0, then scaled_dot_product_attention will be there
+    self.flash = hasattr(F, 'scaled_dot_product_attention')
+    if not self.flash: # older version
+      print("WARNING: using slow attention. Flash attention requires PyTorch >= 2.0")
+      self.register_buffer(
+            "bias",
+            torch.tril(
+              torch.ones(config.block_size, config.block_size)
+            ).view(1, 1, config.block_size, config.block_size)
+      )

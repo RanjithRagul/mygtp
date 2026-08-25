@@ -28,4 +28,17 @@ class LayerNorm(nn.Module):
     return the input
     1e-5 = 0.00001
     """
-    
+class CausalSelfAttention(nn.Module):
+  def __init__(self, config):
+    super().__init__()
+    assert config.n_embd % config.n_head == 0
+    self.c_attn = nn.Linear(config.n_embd, config.n_embd * 3, bias=config.bias)
+    self.c_proj = nn.Linear(config.n_embd, config.n_embd, bias=config.bias)
+    '''
+    nn.linear
+    1. input @ w.T + bias
+    2. weight, bias will be created by itself using given shape
+    3. nn.Linear(in_features, out_features, bias=True)
+    4. weight = torch.randn(out_features, in_features)
+    5. bias = torch.randn(out_features)
+    '''

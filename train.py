@@ -58,6 +58,15 @@ class CausalSelfAttention(nn.Module):
     self.flash = hasattr(F, 'scaled_dot_product_attention')
     if not self.flash: # older version
       print("WARNING: using slow attention. Flash attention requires PyTorch >= 2.0")
+      '''
+      1. this created tensor will be in the model, but don't train it
+      2. this is a templace 
+      [1,0,0]
+      [1,1,0]
+      [1,1,1]
+      3. [1] * block_size -> reshape it to -> (1, 1, block_size, block_size)
+      4. and to the model buffer
+      '''
       self.register_buffer(
             "bias",
             torch.tril(

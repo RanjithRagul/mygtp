@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 from torch import Tensor
+import math
 
 class LayerNorm(nn.Module):
   def __init__(self, ndim:int, bias:bool = True):
@@ -73,3 +74,24 @@ class CausalSelfAttention(nn.Module):
               torch.ones(config.block_size, config.block_size)
             ).view(1, 1, config.block_size, config.block_size)
       )
+		
+def forward(self, x:Tensor)->Tensor:
+	B, T, C = x.size()
+	q, k, v = self.c_attn(x).split(self.n_embd, dim=2)
+	q = q.view(B, T, self.n_head, C//self.n_head).transpose(1, 2)
+	k = k.view(B, T, self.n_head, C//self.n_head).transpose(1, 2)
+	v = v.view(B, T, self.n_head, C//self.n_head).transpose(1, 2)
+
+	if self.flash:
+		y = F.scaled_dot_product_attention(
+			q, k, v, attn_mask=None, dropout_p=self.dropout if self.training else 0, is_casual=True
+		)
+	else:
+		att = q @ k.transpose(-2, -1) / math.sqrt(k.size(-1))
+		att = att.masked_fill(self.bias[:, :, :T, :T] == 0, float('inf'))
+		att = F.softmax(att, dim=-1)
+		att = self.attn_dropout(att)
+		y = att @ v
+	y = y.transpose(1, 2).contiguous().view(B, T, C)
+	y = self.resid_dropout(self.c_proj(y))
+	return y

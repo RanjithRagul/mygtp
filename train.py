@@ -108,3 +108,11 @@ class MLP(nn.module):
 		tensor version : 0.5 * x * (1 + torch.erf(x / torch.sqrt(torch.tensor(2.0)))) # not tensor([2])
 		erf (normal distribution)-> -1 to 1
 		'''
+		
+	def forward(self, x:Tensor)->Tensor:
+		# linear -> GELU -> Linear -> Dropout
+		x = self.c_fc(x)
+		x = self.gelu(x)
+		x = self.c_proj(x)
+		x = self.dropout(x)
+		return x

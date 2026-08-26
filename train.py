@@ -37,7 +37,7 @@ class CausalSelfAttention(nn.Module):
     self.n_embd = config.n_embd
     self.dropout = config.dropout
     self.bias = config.bias
-    self.c_attn = nn.Linear(self.n_embd, self.n_embd * 3, bias=self.bias)
+    self.c_attn = nn.Linear(self.n_embd, 3 * self.n_embd, bias=self.bias)
     self.c_proj = nn.Linear(self.n_embd, self.n_embd, bias=self.bias)
     '''
     nn.linear
@@ -95,3 +95,16 @@ class CausalSelfAttention(nn.Module):
 		y = y.transpose(1, 2).contiguous().view(B, T, C)
 		y = self.resid_dropout(self.c_proj(y))
 		return y
+class MLP(nn.module):
+	def __init__(self, config):
+		super().__init__()
+		self.c_fc = nn.Linear(config.n_embd, 4*config.n_embd, bias=config.bias) # in_feature = n, out_feature = 4*n
+		self.gelu = nn.GELU()
+		self.c_proj = nn.Linear(4*config.n_embd, config.n_embd, bias=config.bias) # in_feature = 4*n, out_feature = n
+		self.dropout = nn.Dropout(config.dropout)
+		'''
+		GELU:
+		simplifed aprox: (x/2) * (1 + erf(x/sqrt(2))) # x is a tensor
+		tensor version : 0.5 * x * (1 + torch.erf(x / torch.sqrt(torch.tensor(2.0)))) # not tensor([2])
+		erf (normal distribution)-> -1 to 1
+		'''

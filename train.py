@@ -74,8 +74,7 @@ class CausalSelfAttention(nn.Module):
                 torch.tril(
                 torch.ones(config.block_size, config.block_size)
                 ).view(1, 1, config.block_size, config.block_size)
-        )
-            
+        )  
     def forward(self, x:Tensor)->Tensor:
 		B, T, C = x.size()
 		q, k, v = self.c_attn(x).split(self.n_embd, dim=2)
@@ -110,11 +109,22 @@ class MLP(nn.module):
 		tensor version : 0.5 * x * (1 + torch.erf(x / torch.sqrt(torch.tensor(2.0)))) # not tensor([2])
 		erf (normal distribution)-> -1 to 1
 		'''
-		
 	def forward(self, x:Tensor)->Tensor:
 		# linear -> GELU -> Linear -> Dropout
 		x = self.c_fc(x)
 		x = self.gelu(x)
 		x = self.c_proj(x)
 		x = self.dropout(x)
+		return x
+
+class Block(nn.module):
+	def __init__(self, config):
+		super().__init__()
+		self.ln_1 = LayerNorm(config.n_embd, bias=config.bias)
+		self.attn = CasualSelfAttention(config)
+		self.ln_2 = LayerNorm(config.n_embd, bias=config.bias)
+		self.mlp  = MLP(config)
+	def forward(self, x:Tensor)->Tensor:
+		x = x + self.attn(self.ln_1(x))
+		x = x + self.mlp(self.ln_2(x))
 		return x

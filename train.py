@@ -32,8 +32,8 @@ class LayerNorm(nn.Module):
 	  
 class CausalSelfAttention(nn.Module):
     def __init__(self, config):
-        super().__init__()
         assert config.n_embd % config.n_head == 0
+        super().__init__()
         self.n_head = config.n_head
         self.n_embd = config.n_embd
         self.dropout = config.dropout
@@ -138,3 +138,18 @@ class GTPConfig:
 	n_embd    : int = 768
 	droupout  : float = 0.0
 	bias      : bool = True # True -> Linear/LayerNorm, False -> bit better and faster
+
+class GTP(nn.module):
+	def __init__(self, config):
+		assert config.vocab_size is not None and config.block_size is not None
+		super().__init__()
+		self.config = config
+
+		self.transformer = nn.ModuleDict(dict(
+			wte = nn.Embedding(config.vocab_size, config.n_embd),
+			wpe = nn.Embedding(config.vocab_size, config.n_embd),
+			drop = nn.Dropout(config.dropout),
+			h = nn.ModuleList([Block(config) for _ in range(config.n_layer)]),
+			ln_f = LayerNorm(config.n_embd, bias=config.bias)
+		))
+		self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)

@@ -128,3 +128,13 @@ class Block(nn.module):
 		x = x + self.attn(self.ln_1(x))
 		x = x + self.mlp(self.ln_2(x))
 		return x
+
+@dataclass
+class GTPConfig:
+	block_size: int = 1024
+	vocab_size: int = 50304 # GTP-2 50257, made into multiple of 64
+	n_layer   : int = 12
+	n_head    : int = 12
+	n_embd    : int = 768
+	droupout  : float = 0.0
+	bias      : bool = True # True -> Linear/LayerNorm, False -> bit better and faster

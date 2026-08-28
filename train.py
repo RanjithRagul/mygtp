@@ -161,3 +161,9 @@ class GTP(nn.module):
 			if pn.endswith('c_proj.weight'):
 				torch.nn.init.normal_(p, mean=0.0, std=0.02/math.sqrt(2*config.n_layer))
 		print("Total Parameters: %.2fM" % (self.get_num_params()/million,))
+		
+	def get_num_params(self, non_embedding:bool=True)->float:
+		n_param = sum(p.numel() for p in self.parameters())
+		if non_embedding:
+			n_param -= self.transformer.wpe.weight.numel()
+		return n_param

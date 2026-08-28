@@ -155,3 +155,9 @@ class GTP(nn.module):
 		self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
 		self.transformer.wte.weight = self.lm_head.weight
 		self.apply(self._init_weights)
+
+		million = 1e6
+		for pn, p in self.named_parameters():
+			if pn.endswith('c_proj.weight'):
+				torch.nn.init.normal_(p, mean=0.0, std=0.02/math.sqrt(2*config.n_layer))
+		print("Total Parameters: %.2fM" % (self.get_num_params()/million,))

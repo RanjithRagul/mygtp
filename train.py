@@ -159,7 +159,7 @@ class GTP(nn.module):
 		million = 1e6
 		for pn, p in self.named_parameters():
 			if pn.endswith('c_proj.weight'):
-				torch.nn.init.normal_(p, mean=0.0, std=0.02/math.sqrt(2*config.n_layer))
+				nn.init.normal_(p, mean=0.0, std=0.02/math.sqrt(2*config.n_layer))
 		print("Total Parameters: %.2fM" % (self.get_num_params()/million,))
 		
 	def get_num_params(self, non_embedding:bool=True)->float:
@@ -167,3 +167,31 @@ class GTP(nn.module):
 		if non_embedding:
 			n_param -= self.transformer.wpe.weight.numel()
 		return n_param
+		
+	def __init__weights(self, module:Tensor)->None:
+		if isinstance(module, nn.Linear):
+			nn.init.normal_(module.weight, mean=0.0, std=0.02)
+			if module.bias is not None:
+				nn.init.zeros(module.bias)
+		elif isinstance(module, nn.Embedding):
+			nn.init.normal_(module.weight, mean=0.0, std=0.02)
+
+	def forward(self, idx:Tensor, targets=None):
+		b, t = idx.device
+		assert t <= self.config.batch_size, f"Cannot forward seqence of length {t}, block size is only {self.config.block_size}" 
+		device = idx.device
+		pos = torch.arange(0, t, dtype=torch.long, device=device)
+		tok_emb = self.transformer.wte(idx)
+		pos_emb = self.transformer.wpe(pos)
+		x = self.transformer.drop(tok_emb + pos_emb)
+		for block in self.transformer.h:
+			x = block(x)
+		x = self.transformer.ln_f(x)
+
+		if targets is not None:
+			logits = self.lm_head(x)
+			loss = F.cross_entropy(logits.view(-1, logits.shape(-1)), targets.view(-1), ignore_index=-1)
+		else:
+			logits = self.lm_head(x[:, [-1], :])
+			loss = None
+		return logits, loss

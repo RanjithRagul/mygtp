@@ -177,7 +177,7 @@ class GTP(nn.module):
 			nn.init.normal_(module.weight, mean=0.0, std=0.02)
 
 	def forward(self, idx:Tensor, targets=None):
-		b, t = idx.device
+		b, t = idx.size()
 		assert t <= self.config.batch_size, f"Cannot forward seqence of length {t}, block size is only {self.config.block_size}" 
 		device = idx.device
 		pos = torch.arange(0, t, dtype=torch.long, device=device)

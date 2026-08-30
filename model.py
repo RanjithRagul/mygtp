@@ -31,7 +31,7 @@ class LayerNorm(nn.Module):
         1e-5 = 0.00001
         """
 	  
-class CausalSelfAttention(nn.Module):
+class CasualSelfAttention(nn.Module):
     def __init__(self, config):
         assert config.n_embd % config.n_head == 0
         super().__init__()

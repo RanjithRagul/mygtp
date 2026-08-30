@@ -284,4 +284,38 @@ class GPT(nn.Module):
 		print(f'using fused AdamW, {use_fused}')
 		optimizer = torch.optim.AdamW(optim_group, lr=learning_rate, betas=betas, **extra_args)
 		return optimizer
+
+'''
+torch.optim.AdamW, Simplified Explanation
+
+class AdamW:
+    def __init__(self, optim_groups, lr, betas):
+        self.groups = optim_groups
+        self.lr = lr
+        self.beta1, self.beta2 = betas
+        self.m, self.v = {}, {}
+        self.step = 0
+	#----------------------------------------------
+    def step(self):
+        self.step += 1
+        for group in self.groups:
+            for w in group["params"]:
+                g = w.grad
+                if w not in self.m:
+                    self.m[w] = self.v[w] = 0
+					
+				# Gradient history
+                self.m[w] = self.beta1 * self.m[w] + (1 - self.beta1) * g
+				# Squared-gradient history
+                self.v[w] = self.beta2 * self.v[w] + (1 - self.beta2) * g**2
+				
+				# Bias correction
+                m_hat = self.m[w] / (1 - self.beta1**self.step)
+                v_hat = self.v[w] / (1 - self.beta2**self.step)
+
+                # Adam
+                w -= self.lr * m_hat / (v_hat.sqrt() + 1e-8)
+                # AdamW
+                w -= self.lr * group["weight_decay"] * w
+'''
 		

@@ -96,7 +96,7 @@ class CausalSelfAttention(nn.Module):
 		y = self.resid_dropout(self.c_proj(y))
 		return y
 		
-class MLP(nn.module):
+class MLP(nn.Module):
 	def __init__(self, config):
 		super().__init__()
 		self.c_fc = nn.Linear(config.n_embd, 4*config.n_embd, bias=config.bias) # in_feature = n, out_feature = 4*n

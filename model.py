@@ -314,8 +314,8 @@ class AdamW:
                 v_hat = self.v[w] / (1 - self.beta2**self.step)
 
                 # Adam
-                w -= self.lr * m_hat / (v_hat.sqrt() + 1e-8)
+                w -= m_hat * self.lr / (v_hat.sqrt() + 1e-8)
                 # AdamW
-                w -= self.lr * group["weight_decay"] * w
+                w -= w * self.lr * group["weight_decay"]
 '''
 		

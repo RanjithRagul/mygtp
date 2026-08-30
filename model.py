@@ -207,17 +207,17 @@ class GPT(nn.Module):
 
 	@classmethod
 	def from_pretrained(cls, model_type:str, override_args=None)->Tensor:
-		assert model_type in {'GPT2', 'GPT2-medium', 'GPT2-large', 'GPT2-xl'}
+		assert model_type in {'gpt2', 'gpt2-medium', 'gpt2-large', 'gpt2-xl'}
 		override_args = override_args or {}
 		assert all(k == 'dropout' for k in override_args)
 		#------------------------------------------------
 		from transformers import GPT2LMHeadModel
 		print(f'Loading weights from pretrained GPT: {model_type}')
 		config_args = {
-			'GPT2'       : dict(n_layer=12, n_head=12, n_embd=768),
-			'GPT2-medium': dict(n_layer=24, n_head=16, n_embd=1024), 
-			'GPT2-large' : dict(n_layer=36, n_head=20, n_embd=1280),
-			'GPT2-xl'    : dict(n_layer=48, n_head=25, n_embd=1600),
+			'gpt2'       : dict(n_layer=12, n_head=12, n_embd=768),
+			'gpt2-medium': dict(n_layer=24, n_head=16, n_embd=1024), 
+			'gpt2-large' : dict(n_layer=36, n_head=20, n_embd=1280),
+			'gpt2-xl'    : dict(n_layer=48, n_head=25, n_embd=1600),
 		}[model_type]
 
 		# As per GPT2 args

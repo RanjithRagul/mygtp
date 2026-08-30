@@ -211,7 +211,7 @@ class GTP(nn.Module):
 		override_args = override_args or {}
 		assert all(k == 'dropout' for k in override_args)
 		#------------------------------------------------
-		from transformers import GPT2LMHeadModel
+		from transformers import GTP2LMHeadModel
 		print(f'Loading weights from pretrained gtp: {model_type}')
 		config_args = {
 			'gtp2'       : dict(n_layer=12, n_head=12, n_embd=768),

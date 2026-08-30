@@ -259,6 +259,6 @@ class GPT(nn.Module):
 			else:
 				# vanilla copy over the other parameters
 				assert sd_hf[k].shape == sd[k].shape
-				with torch.no_gard():
+				with torch.no_grad():
 					sd[k].copy_(sd_hf[k])
 		return model

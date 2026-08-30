@@ -206,7 +206,7 @@ class GTP(nn.Module):
 				block.attn.bias = block.attn.bias[:,:,:block_size]
 
 	@classmethod
-	def from_pretrained(cls, model_type:str, orverride_args=None)->Tensor:
+	def from_pretrained(cls, model_type:str, override_args=None)->Tensor:
 		assert model_type in {'gtp2', 'gtp2-medium', 'gtp2-large', 'gtp2-xl'}
 		override_args = override_args or {}
 		assert all(k == 'dropout' for k in override_args)

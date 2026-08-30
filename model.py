@@ -262,3 +262,20 @@ class GPT(nn.Module):
 				with torch.no_grad():
 					sd[k].copy_(sd_hf[k])
 		return model
+		
+	def configure_optimizers(self, weight_decay, learning_rate, betas, device_type):
+		param_dict = {pn:p for pn, n in self.named_parameters()}
+		param_dict = {pn:p for pn, n in param_dict.items() if p.required_grad}
+		decay_params = [p for p in param_dict.values() if p.dim() > 1]
+		nodecay_params = [p for p in param_dict.values() if p.dim() < 2]
+		optim_groups = [
+			{'params' : decay_params, 'weight_decay' : weight_decay},
+			{'params' : nodecay_params, 'weight_decay' : 0.0}
+		]
+		num_decay_params = sum(p.numel() for p in decay_params)
+		num_nodecay_params = sum(p.numel() for p in nodecay_params)
+		print(f'# of decayed parameter tensors: {len(decay_params)}, with {num_decay_params:,} parameters')
+		print(f'# of non-decayed parameter tensors: {len(nodecay_params)}, with {num_nodecay_params:,} parameters')
+
+
+		

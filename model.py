@@ -140,7 +140,7 @@ class GTPConfig:
 	droupout  : float = 0.0
 	bias      : bool = True # True -> Linear/LayerNorm, False -> bit better and faster
 
-class GTP(nn.module):
+class GTP(nn.Module):
 	def __init__(self, config):
 		assert config.vocab_size is not None and config.block_size is not None
 		super().__init__()

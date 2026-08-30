@@ -137,7 +137,7 @@ class GTPConfig:
 	n_layer   : int = 12
 	n_head    : int = 12
 	n_embd    : int = 768
-	droupout  : float = 0.0
+	dropout  : float = 0.0
 	bias      : bool = True # True -> Linear/LayerNorm, False -> bit better and faster
 
 class GTP(nn.Module):

@@ -252,7 +252,7 @@ class GPT(nn.Module):
 		assert len(sd_keys) == len(sd_keys_hf), f"mismatch keys, current_model:{len(sd_keys)} != imported_model:{len(sd_keys_hf)}"
 		transposed = ['attn.c_attn.weight', 'attn.c_proj.weight', 'mlp.c_fc.weight', 'mlp..c_proj.weight']
 		for k in sd_keys_hf:
-			if any(k.endswith(w) for w in transpossed):
+			if any(k.endswith(w) for w in transposed):
 				assert sd_hf[k].shape[::-1] == sd[k].shape
 				with torch.no_grad():
 					sd[k].copy_(sd_hf[k].t())

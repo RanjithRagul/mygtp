@@ -131,16 +131,16 @@ class Block(nn.Module):
 		return x
 
 @dataclass
-class GTPConfig:
+class GPTConfig:
 	block_size: int = 1024
-	vocab_size: int = 50304 # GTP-2 50257, made into multiple of 64
+	vocab_size: int = 50304 # GPT-2 50257, made into multiple of 64
 	n_layer   : int = 12
 	n_head    : int = 12
 	n_embd    : int = 768
 	dropout  : float = 0.0
 	bias      : bool = True # True -> Linear/LayerNorm, False -> bit better and faster
 
-class GTP(nn.Module):
+class GPT(nn.Module):
 	def __init__(self, config):
 		assert config.vocab_size is not None and config.block_size is not None
 		super().__init__()
@@ -207,20 +207,20 @@ class GTP(nn.Module):
 
 	@classmethod
 	def from_pretrained(cls, model_type:str, override_args=None)->Tensor:
-		assert model_type in {'gtp2', 'gtp2-medium', 'gtp2-large', 'gtp2-xl'}
+		assert model_type in {'GPT2', 'GPT2-medium', 'GPT2-large', 'GPT2-xl'}
 		override_args = override_args or {}
 		assert all(k == 'dropout' for k in override_args)
 		#------------------------------------------------
-		from transformers import GTP2LMHeadModel
-		print(f'Loading weights from pretrained gtp: {model_type}')
+		from transformers import GPT2LMHeadModel
+		print(f'Loading weights from pretrained GPT: {model_type}')
 		config_args = {
-			'gtp2'       : dict(n_layer=12, n_head=12, n_embd=768),
-			'gtp2-medium': dict(n_layer=24, n_head=16, n_embd=1024), 
-			'gtp2-large' : dict(n_layer=36, n_head=20, n_embd=1280),
-			'gtp2-xl'    : dict(n_layer=48, n_head=25, n_embd=1600),
+			'GPT2'       : dict(n_layer=12, n_head=12, n_embd=768),
+			'GPT2-medium': dict(n_layer=24, n_head=16, n_embd=1024), 
+			'GPT2-large' : dict(n_layer=36, n_head=20, n_embd=1280),
+			'GPT2-xl'    : dict(n_layer=48, n_head=25, n_embd=1600),
 		}[model_type]
 
-		# As per GTP2 args
+		# As per GPT2 args
 		print("Forcing vocab_size=50257, block_size=1024, bias=True")
 		config_args['vocab_size'] = 50257
 		config_args['block_size'] = 1024
@@ -230,16 +230,16 @@ class GTP(nn.Module):
 			print(f'overriding dropout rate to {override_args['dropout']}')
 			config_args['dropout'] = override_args['dropout']
 
-		# create from the scratch, initialized minGTP model
-		config = GTPConfig(**config_args)
-		model = GTP(config)
+		# create from the scratch, initialized minGPT model
+		config = GPTConfig(**config_args)
+		model = GPT(config)
 		sd = model.state_dict()
 		sd_keys = sd.keys()
 		sd_keys = [k for k in sd_keys if not k.endswith('.attn.bias')] # discard bias, bias mask
 
 		#--------------------------------------------------------
 		# init Hugging face/transformer model
-		model_hf = GTP2LMHeadModel.from_pretrained(model_type)
+		model_hf = GPT2LMHeadModel.from_pretrained(model_type)
 		sd_hf = model_hf.state_dict()
 		
 		# copy it from Hugging face weights to our current model

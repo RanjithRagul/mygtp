@@ -60,22 +60,22 @@ class CausalSelfAttention(nn.Module):
         '''
         self.flash = hasattr(F, 'scaled_dot_product_attention')
         if not self.flash: # older version
-        print("WARNING: using slow attention. Flash attention requires PyTorch >= 2.0")
-        '''
-        1. this created tensor will be in the model, but don't train it
-        2. this is a templace 
-        [1,0,0]
-        [1,1,0]
-        [1,1,1]
-        3. [1] * block_size -> reshape it to -> (1, 1, block_size, block_size)
-        4. and to the model buffer
-        '''
-        self.register_buffer(
-                "bias",
-                torch.tril(
-                torch.ones(config.block_size, config.block_size)
-                ).view(1, 1, config.block_size, config.block_size)
-        )  
+	        print("WARNING: using slow attention. Flash attention requires PyTorch >= 2.0")
+	        '''
+	        1. this created tensor will be in the model, but don't train it
+	        2. this is a templace 
+	        [1,0,0]
+	        [1,1,0]
+	        [1,1,1]
+	        3. [1] * block_size -> reshape it to -> (1, 1, block_size, block_size)
+	        4. and to the model buffer
+	        '''
+	        self.register_buffer(
+	                "bias",
+	                torch.tril(
+	                torch.ones(config.block_size, config.block_size)
+	                ).view(1, 1, config.block_size, config.block_size)
+	        )  
     def forward(self, x:Tensor)->Tensor:
 		B, T, C = x.size()
 		q, k, v = self.c_attn(x).split(self.n_embd, dim=2)

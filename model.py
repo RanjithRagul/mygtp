@@ -243,7 +243,7 @@ class GPT(nn.Module):
 		sd_hf = model_hf.state_dict()
 		
 		# copy it from Hugging face weights to our current model
-		sd_keys = sd_hf.keys()
+		sd_keys_hf = sd_hf.keys()
 		sd_keys_hf = [k for k in sd_keys_hf if not k.endswith('.attn.bias')]
 		sd_keys_hf = [k for k in sd_keys_hf if not k.endswith('.attn.masked.bias')]
 

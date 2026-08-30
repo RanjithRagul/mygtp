@@ -169,7 +169,7 @@ class GTP(nn.Module):
 			n_param -= self.transformer.wpe.weight.numel()
 		return n_param
 		
-	def __init__weights(self, module:Tensor)->None:
+	def _init_weights(self, module:Tensor)->None:
 		if isinstance(module, nn.Linear):
 			nn.init.normal_(module.weight, mean=0.0, std=0.02)
 			if module.bias is not None:

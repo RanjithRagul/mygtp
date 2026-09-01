@@ -229,7 +229,7 @@ class GPT(nn.Module):
 		config_args['bias']       = True
 
 		if 'dropout' in override_args:
-			print(f'overriding dropout rate to {override_args['dropout']}')
+			print(f"overriding dropout rate to {override_args['dropout']}")
 			config_args['dropout'] = override_args['dropout']
 
 		# create from the scratch, initialized minGPT model
@@ -247,12 +247,12 @@ class GPT(nn.Module):
 		# copy it from Hugging face weights to our current model
 		sd_keys_hf = sd_hf.keys()
 		sd_keys_hf = [k for k in sd_keys_hf if not k.endswith('.attn.bias')]
-		sd_keys_hf = [k for k in sd_keys_hf if not k.endswith('.attn.masked.bias')]
+		sd_keys_hf = [k for k in sd_keys_hf if not k.endswith('.attn.masked_bias')]
 
 		# OpenAI checkpoints use a "Conv1D" module but we only want to use a vanilla Linear
 		# so that we need to transpose these weights when we import them
 		assert len(sd_keys) == len(sd_keys_hf), f"mismatch keys, current_model:{len(sd_keys)} != imported_model:{len(sd_keys_hf)}"
-		transposed = ['attn.c_attn.weight', 'attn.c_proj.weight', 'mlp.c_fc.weight', 'mlp..c_proj.weight']
+		transposed = ['attn.c_attn.weight', 'attn.c_proj.weight', 'mlp.c_fc.weight', 'mlp.c_proj.weight']
 		for k in sd_keys_hf:
 			if any(k.endswith(w) for w in transposed):
 				assert sd_hf[k].shape[::-1] == sd[k].shape
@@ -266,8 +266,8 @@ class GPT(nn.Module):
 		return model
 		
 	def configure_optimizers(self, weight_decay, learning_rate, betas, device_type):
-		param_dict = {pn:p for pn, n in self.named_parameters()}
-		param_dict = {pn:p for pn, n in param_dict.items() if p.required_grad}
+		param_dict = {pn:p for pn, p in self.named_parameters()}
+		param_dict = {pn:p for pn, p in param_dict.items() if p.requires_grad}
 		decay_params = [p for p in param_dict.values() if p.dim() > 1]
 		nodecay_params = [p for p in param_dict.values() if p.dim() < 2]
 		optim_groups = [
@@ -284,7 +284,7 @@ class GPT(nn.Module):
 		use_fused = fused_available and device_type == 'cuda'
 		extra_args = dict(fused=True) if use_fused else dict()
 		print(f'using fused AdamW, {use_fused}')
-		optimizer = torch.optim.AdamW(optim_group, lr=learning_rate, betas=betas, **extra_args)
+		optimizer = torch.optim.AdamW(optim_groups, lr=learning_rate, betas=betas, **extra_args)
 		return optimizer
 
 '''

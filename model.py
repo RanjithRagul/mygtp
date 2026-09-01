@@ -32,7 +32,7 @@ class LayerNorm(nn.Module):
         """
 	  
 class CasualSelfAttention(nn.Module):
-    def __init__(self, config):
+    def __init__(self, config:GPTConfig):
         assert config.n_embd % config.n_head == 0
         super().__init__()
         self.n_head = config.n_head

@@ -345,4 +345,31 @@ class AdamW:
 		flops_promised = 312e12 # A100 GPU bfloat16 peak flops is 312 TFLOPS
 		mfu = flops_achieved / flops_promised
 		return mfu
-
+	def generate(self, idx:Tensor, max_new_token:int, temperature:float=1.0, tok_k:int | None=None)->Tensor:
+		for _ in range(max_new_token):
+			idx_cond = idx if idx.size(1) <= self.config.block_size else idx[:, -self.config.block_size:]
+			# also called:
+			# i = min(idx.size(1), self.config.block_size)
+			# idx_cond = idx[:, -i:]
+			#-----------------------------------------------------------
+			# forward_pass it to the model, self(idx_cond) mean we passing the idx_cmd to the model
+			logits, _ = self(idx_cmd) # logits, loss
+			logits = logits[:, -1, :] / temperature
+			if top_k is not None:
+				v, _ = torch.top_k(logits, min(top_k, logits.size(-1)))
+				logits[logits < v[:, [-1]]] = -float('inf')
+			probs = F.softmax(logits, dim=-1)
+			idx_next = torch.multinominal(probs, num_samples=1)
+			idx = torch.cat((idx, idx_next), dim=1) 
+			'''
+			i guess dim = 2
+			  idx      |   idx_next
+			--------------------------
+			[[1, 2, 3], | [[9, 10],
+			[5, 6, 7]]  |  [11, 12]]
+			---------------------------
+			result:
+			[[1, 2, 3, 9, 10],
+			 [5, 6, 7, 11, 12]]
+		return idx
+			

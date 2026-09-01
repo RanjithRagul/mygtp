@@ -181,7 +181,7 @@ class GPT(nn.Module):
 
 	def forward(self, idx:Tensor, targets=None):
 		b, t = idx.size()
-		assert t <= self.config.batch_size, f"Cannot forward seqence of length {t}, block size is only {self.config.block_size}" 
+		assert t <= self.config.block_size, f"Cannot forward seqence of length {t}, block size is only {self.config.block_size}" 
 		device = idx.device
 		pos = torch.arange(0, t, dtype=torch.long, device=device)
 		tok_emb = self.transformer.wte(idx)
@@ -193,7 +193,7 @@ class GPT(nn.Module):
 
 		if targets is not None:
 			logits = self.lm_head(x)
-			loss = F.cross_entropy(logits.view(-1, logits.shape(-1)), targets.view(-1), ignore_index=-1)
+			loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1), ignore_index=-1)
 		else:
 			logits = self.lm_head(x[:, [-1], :])
 			loss = None
@@ -205,7 +205,7 @@ class GPT(nn.Module):
 		self.transformer.wpe.weight = nn.Parameter(self.transformer.wpe.weight[:block_size])
 		for block in self.transformer.h:
 			if hasattr(block.attn, 'bias'):
-				block.attn.bias = block.attn.bias[:,:,:block_size]
+				block.attn.bias = block.attn.bias[:, :, :block_size, :block_size]
 
 	@classmethod
 	def from_pretrained(cls, model_type:str, override_args=None)->Tensor:

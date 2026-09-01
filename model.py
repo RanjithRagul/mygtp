@@ -76,6 +76,7 @@ class CausalSelfAttention(nn.Module):
 	                torch.ones(config.block_size, config.block_size)
 	                ).view(1, 1, config.block_size, config.block_size)
 	        )  
+			
     def forward(self, x:Tensor)->Tensor:
 		B, T, C = x.size()
 		q, k, v = self.c_attn(x).split(self.n_embd, dim=2)

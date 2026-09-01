@@ -347,8 +347,8 @@ class AdamW:
 		flops_promised = 312e12 # A100 GPU bfloat16 peak flops is 312 TFLOPS
 		mfu = flops_achieved / flops_promised
 		return mfu
-	def generate(self, idx:Tensor, max_new_token:int, temperature:float=1.0, tok_k:int | None=None)->Tensor:
-		for _ in range(max_new_token):
+	def generate(self, idx:Tensor, max_new_tokens:int, temperature:float=1.0, tok_k:int | None=None)->Tensor:
+		for _ in range(max_new_tokens):
 			idx_cond = idx if idx.size(1) <= self.config.block_size else idx[:, -self.config.block_size:]
 			# also called:
 			# i = min(idx.size(1), self.config.block_size)

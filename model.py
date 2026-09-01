@@ -6,7 +6,7 @@ import math
 from dataclasses import dataclass
 
 class LayerNorm(nn.Module):
-    def __init__(self, ndim:int, bias:bool = True):
+    def __init__(self, ndim:int, bias:bool):
         super().__init__()
         self.weight = nn.Parameter(torch.ones(ndim))
         self.bias = nn.Parameter(torch.zeros(ndim)) if bias else None

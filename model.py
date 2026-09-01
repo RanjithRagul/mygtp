@@ -31,7 +31,7 @@ class LayerNorm(nn.Module):
         1e-5 = 0.00001
         """
 	  
-class CasualSelfAttention(nn.Module):
+class CausalSelfAttention(nn.Module):
     def __init__(self, config:"GPTConfig"):
         assert config.n_embd % config.n_head == 0
         super().__init__()
@@ -110,6 +110,7 @@ class MLP(nn.Module):
 		tensor version : 0.5 * x * (1 + torch.erf(x / torch.sqrt(torch.tensor(2.0)))) # not tensor([2])
 		erf (normal distribution)-> -1 to 1
 		'''
+		
 	def forward(self, x:Tensor)->Tensor:
 		# linear -> GELU -> Linear -> Dropout
 		x = self.c_fc(x)
@@ -122,9 +123,10 @@ class Block(nn.Module):
 	def __init__(self, config):
 		super().__init__()
 		self.ln_1 = LayerNorm(config.n_embd, bias=config.bias)
-		self.attn = CasualSelfAttention(config)
+		self.attn = CausalSelfAttention(config)
 		self.ln_2 = LayerNorm(config.n_embd, bias=config.bias)
 		self.mlp  = MLP(config)
+		
 	def forward(self, x:Tensor)->Tensor:
 		x = x + self.attn(self.ln_1(x))
 		x = x + self.mlp(self.ln_2(x))

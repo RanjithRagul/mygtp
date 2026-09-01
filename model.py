@@ -376,5 +376,6 @@ class AdamW:
 			result:
 			[[1, 2, 3, 9, 10],
 			 [5, 6, 7, 11, 12]]
+			'''
 		return idx
 			

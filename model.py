@@ -32,7 +32,7 @@ class LayerNorm(nn.Module):
         """
 	  
 class CasualSelfAttention(nn.Module):
-    def __init__(self, config:GPTConfig):
+    def __init__(self, config:"GPTConfig"):
         assert config.n_embd % config.n_head == 0
         super().__init__()
         self.n_head = config.n_head
@@ -98,7 +98,7 @@ class CasualSelfAttention(nn.Module):
 		return y
 		
 class MLP(nn.Module):
-	def __init__(self, config:GPTConfig):
+	def __init__(self, config:"GPTConfig"):
 		super().__init__()
 		self.c_fc = nn.Linear(config.n_embd, 4*config.n_embd, bias=config.bias) # in_feature = n, out_feature = 4*n
 		self.gelu = nn.GELU()

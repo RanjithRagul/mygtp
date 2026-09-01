@@ -85,7 +85,7 @@ class CasualSelfAttention(nn.Module):
 	
 		if self.flash:
 			y = F.scaled_dot_product_attention(
-				q, k, v, attn_mask=None, dropout_p=self.dropout if self.training else 0, is_casual=True
+				q, k, v, attn_mask=None, dropout_p=self.dropout if self.training else 0, is_causal=True
 			)
 		else:
 			att = q @ k.transpose(-2, -1) / math.sqrt(k.size(-1))

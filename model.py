@@ -78,7 +78,7 @@ class CausalSelfAttention(nn.Module):
 			)  
 		 
 	def forward(self, x:Tensor)->Tensor:
-		B, T, C = x.size()
+		B, T, C = x.shape
 		q, k, v = self.c_attn(x).split(self.n_embd, dim=2)
 		q = q.view(B, T, self.n_head, C//self.n_head).transpose(1, 2)
 		k = k.view(B, T, self.n_head, C//self.n_head).transpose(1, 2)
@@ -181,7 +181,7 @@ class GPT(nn.Module):
 			nn.init.normal_(module.weight, mean=0.0, std=0.02)
 
 	def forward(self, idx:Tensor, targets=None):
-		b, t = idx.size()
+		b, t = idx.shape
 		assert t <= self.config.block_size, f"Cannot forward seqence of length {t}, block size is only {self.config.block_size}" 
 		device = idx.device
 		pos = torch.arange(0, t, dtype=torch.long, device=device)

@@ -35,10 +35,10 @@ class CausalSelfAttention(nn.Module):
 	def __init__(self, config:"GPTConfig"):
 		assert config.n_embd % config.n_head == 0
 		super().__init__()
-		self.n_head = config.n_head
-		self.n_embd = config.n_embd
-		self.dropout = config.dropout
-		self.bias = config.bias
+		self.n_head : int   = config.n_head
+		self.n_embd : int   = config.n_embd
+		self.dropout: float = config.dropout
+		self.bias   : float = config.bias
 		self.c_attn = nn.Linear(self.n_embd, 3 * self.n_embd, bias=self.bias)
 		self.c_proj = nn.Linear(self.n_embd, self.n_embd, bias=self.bias)
 		'''

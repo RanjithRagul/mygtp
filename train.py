@@ -9,6 +9,7 @@ from torch.distributed import init_process_groups, destory_process_group
 from model import GPTConfig, GPT
 #--------------------------------------------------------------------------
 out_dir = 'out'
+device = 'cuda'
 gradient_Accumulation = 5 * 8
 #--------------------------------------------------------------------------
 ddp = int(os.environ.get('RANK', -1)) != -1
@@ -38,3 +39,11 @@ if master_process:
 
 torch.backend.cuda.matmul.allow_tf32 = True
 torch.backend.cudnn.allow_tf32 = True
+device_type = 'cuda' if 'cuda' in device else 'cpu'
+ptdtype     = {
+                'bfloat32' : torch.bfloat32,
+                'float32'  : torch.float32,
+                'float16'  : torch.float16,
+              }[dtype]
+ctx = nullcontext() if device_type == 'cpu' else torch.amp.autocast(device_type=device_type, dtype=ptdtype)
+

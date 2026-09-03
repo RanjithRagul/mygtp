@@ -92,11 +92,13 @@ class CausalSelfAttention(nn.Module):
 				is_causal=True
 			)
 		else:
+			# Q @ K**T -> mask_fill -> softmax -> dropout -> att @ v
 			att = q @ k.transpose(1, 2) / math.sqrt(k.size(-1)) # here (1, 2) != (-1, -2) because its a 4D
 			att = att.masked_fill(self.bias[:, :, :T, :T] == 0, float('-inf'))
 			att = F.softmax(att, dim=-1)
 			att = self.attn_dropout(att)
 			y = att @ v
+		# transpose -> c_proj (2nd Linear) -> (resid_proj) dropout
 		y = y.transpose(-2, -1).contiguous().view(B, T, C)
 		y = self.c_proj(y)
 		y = self.resid_dropout(y)

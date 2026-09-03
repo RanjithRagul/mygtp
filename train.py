@@ -28,4 +28,7 @@ else: # CPU
   master_process = True
   seed_offset = 0
   ddp_world_size = 1
+
+token_per_iter = gradient_accumulation_steps * ddp_world_size * batch_size * block_size
+print(f'toeks per iteration will be: {token_per_iter:,}')
   

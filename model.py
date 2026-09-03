@@ -141,13 +141,13 @@ class Block(nn.Module):
 
 @dataclass
 class GPTConfig:
-	block_size: int = 1024
-	vocab_size: int = 50304 # GPT-2 50257, made into multiple of 64
-	n_layer   : int = 12
-	n_head    : int = 12
-	n_embd    : int = 768
-	dropout  : float = 0.0
-	bias      : bool = True # True -> Linear/LayerNorm, False -> bit better and faster
+	block_size: int   = 1024
+	vocab_size: int   = 50304 # GPT-2 50257, made into multiple of 64
+	n_layer   : int   = 12
+	n_head    : int   = 12
+	n_embd    : int   = 768
+	dropout   : float = 0.0
+	bias      : bool  = True # True -> Linear/LayerNorm, False -> bit better and faster
 
 class GPT(nn.Module):
 	def __init__(self, config):

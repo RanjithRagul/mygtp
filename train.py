@@ -8,6 +8,7 @@ from torch.distributed import init_process_groups, destory_process_group
 
 from model import GPTConfig, GPT
 #--------------------------------------------------------------------------
+out_dir = 'out'
 gradient_Accumulation = 5 * 8
 #--------------------------------------------------------------------------
 ddp = int(os.environ.get('RANK', -1)) != -1
@@ -31,4 +32,7 @@ else: # CPU
 
 token_per_iter = gradient_accumulation_steps * ddp_world_size * batch_size * block_size
 print(f'toeks per iteration will be: {token_per_iter:,}')
+
+if master_process:
+  os.makedir(out_dir, exist_ok=True)
   

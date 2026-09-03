@@ -46,4 +46,4 @@ ptdtype     = {
                 'float16'  : torch.float16,
               }[dtype]
 ctx = nullcontext() if device_type == 'cpu' else torch.amp.autocast(device_type=device_type, dtype=ptdtype)
-
+torch.amp.autocast(device_type=device_type, dtype=ptdtype)

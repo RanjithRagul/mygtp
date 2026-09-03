@@ -37,3 +37,4 @@ if master_process:
   os.makedir(out_dir, exist_ok=True)
 
 torch.backend.cuda.matmul.allow_tf32 = True
+torch.backend.cudnn.allow_tf32 = True

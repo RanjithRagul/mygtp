@@ -19,6 +19,8 @@ n_head  = 12
 n_embd  = 768
 dropout = 0.0
 bias    = False
+#------------------------------ config-2 ---------------------------------------
+init_from = 'scratch'
 #------------------------------ adamW optimizer ---------------------------------------
 learning_rate = 6e-4 # 0.6000
 max_iters = 600000 
@@ -101,3 +103,54 @@ if os.path.exists(meta_path):
     meta = pickle.load(f)
   meta_vocab_size = meta['vocab_size']
   print(f'found vocab_size = {meta_vocab_size} (inside {meta_path})')
+
+model_args   = dict(
+                    block_size = block_size,
+                    vocab_size = None,
+                    n_embd  = n_embd,
+                    n_layer = n_layer,
+                    n_head  = n_head,
+                    dropout = dropout,
+                    bias    = bias
+                  )
+
+if init_from == 'scratch':
+  print(f'Initializing a new model from scratch')
+  if meta_vocab_size is None:
+    print('Defaulting to vocab_size of GPT-2 to 50304 (50257 rounded up for efficiency)')
+  model_args['vocab_size'] = meta_vocab_size if meta_vocab_size is not None else 50304
+  gptconfig = GPTConfig(**model_args)
+  model = GPT(gptconfig)
+elif init_from == 'resume':
+  print(f'Resuming training from {out_dir}')
+  ckpt_path  = os.path.join(out_dir, 'ckpt.pt')
+  checkpoint = torch.load(ckpt_path, map_location = device)
+  checkpoint_model_args = checkpoint['model_args']
+  for k in ['block_size', 'vocab_size', 'n_embd', 'n_layer', 'n_head', 'bias']:
+    model_args[k] = checkpoint_model_args[k]
+
+  gptconfig = GPTConfig(**model_args)
+  model = GPT(gptconfig)
+  
+  state_dict = checkpoint['model']
+  unwanter_prefix = '_orgin_mod.'
+  N_unwanter_prefix = len(unwanted_prefix)
+  for k in state_dict.keys():
+    if k.startswith(unwanted_prefix):
+      state_dict[k[N_unwanted_prefix:] = state_dict.pop(k)
+      
+  model.load_state_dict(state_dict)
+  iter_num = checkpoint['iter_num']
+  best_val+loss = checkpoint['best_val_loss']
+elif init_from.startwith('gpt2'):
+  print('Initializing from OpenAI GPT-2 weights: {init_from}')
+  override_args = dict(dropout=dropout)
+  model = GPT.from_pretrained(init_from, override_args)
+  for k in ['block_size', 'vocab_size', 'n_embd', 'n_layer', 'n_head', 'bias']:
+    model_args[k] = getattr(model.config, k)
+
+# cropdown the model block size if desired, using model surgery
+if block_size < model.config.block_size:
+  mode.crop_block_size(block_size)
+  model_args['block_size'] = block_size
+model.size(device)

@@ -7,8 +7,10 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.distributed import init_process_groups, destory_process_group
 
 from model import GPTConfig, GPT
-#--------------------------------------------------------------------------
+#------------------------------ dir --------------------------------------------
 out_dir = 'out'
+dataset = 'openwebtext'
+#--------------------------------------------------------------------------
 device = 'cuda'
 gradient_Accumulation = 5 * 8
 dtype = 'bfloat16' if torch.cuda.is_available() and torch.cuda.is_b16_supported() else 'float16'
@@ -47,4 +49,21 @@ ptdtype     = {
                 'bfloat16' : torch.bfloat16,
               }[dtype]
 ctx = nullcontext() if device_type == 'cpu' else torch.amp.autocast(device_type=device_type, dtype=ptdtype)
-torch.amp.autocast(device_type=device_type, dtype=ptdtype)
+
+data_dir = os.path.join('data', dataset)
+def get_batch(split):
+  if split == 'train':
+    data = np.memmap(os.path.join(data_dir, 'train.bin'), dtype=np.uint16, mode='r')
+  else:
+    data = np.memmap(os.path.join(data_dir, 'val.bin'  ), dtype=np.uint16, mode='r')
+  ix = torch.ranint(len(data) - block_size, (batch_size,))
+  x = torch.stack([torch.from_numpy((data[i  :i+block_size ]).astype(np.int64))  for i in ix])
+  y = torch.stack([torch.from_numpy((data[i+1:i+1+block_size]).astype(np.int64)) for i in id])
+
+  if device_type == 'cuda':
+    x = x.pin_memory().to(device, non_blocking=True)
+    y = y.pin_memory().to(device, non_blocking=True)
+  else:
+    x = x.to(device)
+    y = y.to(device)
+  return x, y

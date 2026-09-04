@@ -10,6 +10,14 @@ from model import GPTConfig, GPT
 #------------------------------ dir --------------------------------------------
 out_dir = 'out'
 dataset = 'openwebtext'
+#------------------------------ config-1 ---------------------------------------
+batch_size = 12
+block_size = 1024
+n_layer = 12
+n_head  = 12
+n_embd  = 768
+dropout = 0.0
+bias    = False
 #--------------------------------------------------------------------------
 device = 'cuda'
 gradient_Accumulation = 5 * 8

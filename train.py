@@ -19,15 +19,15 @@ n_embd  = 768
 dropout = 0.0
 bias    = False
 #------------------------------ adamW optimizer ---------------------------------------
-learning_rate = 6e-4 # max learning rate
-max_iters = 600000 # total number of training iterations
-weight_decay = 1e-1
+learning_rate = 6e-4 # 0.6000
+max_iters = 600000 
+weight_decay = 1e-1 # 0.1
 beta1 = 0.9
 beta2 = 0.95
 grad_clip = 1.0 # clip gradients at this value, or disable if == 0.0
 # learning rate decay settings
 decay_lr = True # whether to decay the learning rate
-warmup_iters = 2000 # how many steps to warm up for
+warmup_iters = 2000
 lr_decay_iters = 600000 # should be ~= max_iters per Chinchilla
 min_lr = 6e-5 # minimum learning rate, should be ~= learning_rate/10 per Chinchilla
 #--------------------------------------------------------------------------

@@ -1,4 +1,5 @@
 import os
+import pickle
 from contextlib import nullcontext
 
 import numpy as np
@@ -87,3 +88,16 @@ def get_batch(split):
     x = x.to(device)
     y = y.to(device)
   return x, y
+
+# init these up here, can override if init_from='resume' (i.e, from a checkpoint)
+iter_num = 0
+bext_val_loss = 1e9 # 1000,000,000 = 1Billion
+
+# attempt to derive vocab_size from the dataset
+meta_path = os.path.join(data_dir, 'meta.pkl')
+meta_vocab_size = None
+if os.path.exists(meta_path):
+  with open(meta_path, 'rb') as f:
+    meta = pickle.load(f)
+  meta_vocab_size = meta['vocab_size']
+  print(f'found vocab_size = {meta_vocab_size} (inside {meta_path})')

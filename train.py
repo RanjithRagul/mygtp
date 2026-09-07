@@ -171,3 +171,5 @@ but float16, 0.00000001 set to be 0. we will lost the accuracy
 9. update scale
 '''
 scaler = torch.cuda.amp.GradScaler(enabled=dtype=='float16')
+
+optimizer = model.config_optimizers(weight_decay, learning_rate, (beta1, beta2), device_type)

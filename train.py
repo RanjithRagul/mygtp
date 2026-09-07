@@ -173,3 +173,30 @@ but float16, 0.00000001 set to be 0. we will lost the accuracy
 scaler = torch.cuda.amp.GradScaler(enabled=dtype=='float16')
 
 optimizer = model.config_optimizers(weight_decay, learning_rate, (beta1, beta2), device_type)
+if init_from == 'resume':
+  optimizer.load_state_dict(checkpoint['optimizer'])
+checkpoint = None
+
+# complie the model
+if compile:
+  print('Compiling the model...')
+  unoptimized_model = model
+  model = torch.compile(model) # torch >= 2.0
+
+if ddp:
+  model = DDP(model, devive_ids = [ddp_local_rank])
+
+@torch.no_grad()
+def estimate_loss():
+  out = {}
+  model.eval()
+  for split in ['train', 'val']:
+    losses = torch.zeros(eval_iters)
+    for k in range(eval_iters):
+      X, Y = get_batch(split)
+      with cts:
+        logits, loss = model(X, Y)
+      losses[k] = loss.item()
+    out[split] = losses.mean()
+  model.train()
+  return out

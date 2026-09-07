@@ -153,4 +153,6 @@ elif init_from.startwith('gpt2'):
 if block_size < model.config.block_size:
   mode.crop_block_size(block_size)
   model_args['block_size'] = block_size
+  
 model.to(device)
+scaler = torch.cuda.amp.GradScaler(enabled=dtype=='float16')

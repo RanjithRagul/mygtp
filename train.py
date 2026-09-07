@@ -155,4 +155,19 @@ if block_size < model.config.block_size:
   model_args['block_size'] = block_size
   
 model.to(device)
+'''
+Usage of GradScaler:
+for float32: use the precise data
+but float16, 0.00000001 set to be 0. we will lost the accuracy
+0. small gard -> multiple by large # -> gard becomes representable in FP16 -> optimizer update -> divide by same #
+1. loss = 0.0001
+2. scale = 63336
+3. scaled_loss = loss * scale
+4. => 6.5536
+5. scaler.scale(loss).backward()
+6. check Inf/NaN
+7. ÷ same scale
+8. optimizer.step()
+9. update scale
+'''
 scaler = torch.cuda.amp.GradScaler(enabled=dtype=='float16')

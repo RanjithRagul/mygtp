@@ -214,3 +214,10 @@ if wandb_log and master_process:
   import wandb
   wandb.init(project=wandb_project, name=wandb_run_name, config=config)
   
+X, Y = get_batch('train')
+t0   = time.time()
+running_mfu    = -1.0
+local_iter_num = 0
+raw_model = model.module if ddp else model
+
+while True:

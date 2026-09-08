@@ -21,6 +21,7 @@ n_head  = 12
 n_embd  = 768
 dropout = 0.0
 bias    = False
+gradient_accumulation_steps = 5 * 8
 #------------------------------ config-2 ---------------------------------------
 init_from = 'scratch'
 #------------------------------ wandb logging ----------------------------------

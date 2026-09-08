@@ -23,7 +23,12 @@ dropout = 0.0
 bias    = False
 gradient_accumulation_steps = 5 * 8
 #------------------------------ config-2 ---------------------------------------
-init_from = 'scratch'
+init_from     = 'scratch'
+eval_interval = 2000
+log_interval  = 1
+eval_iters    = 200
+eval_only     = False
+always_save_checkpoint = True
 #------------------------------ wandb logging ----------------------------------
 wandb_log = False
 wandb_project = 'owt'

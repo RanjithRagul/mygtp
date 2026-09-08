@@ -50,6 +50,7 @@ device = 'cuda'
 gradient_Accumulation = 5 * 8
 dtype = 'bfloat16' if torch.cuda.is_available() and torch.cuda.is_b16_supported() else 'float16'
 #--------------------------------------------------------------------------
+backend = 'nccl' # gloo, etc
 ddp = int(os.environ.get('RANK', -1)) != -1
 if ddp: # GPU
   init_process_groups(backend=backend)

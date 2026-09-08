@@ -210,3 +210,7 @@ def get_lr(it:float) -> float:
   coeff       = 0.5 * (1 + math.cos(math.pi * decay_ratio))
   return min_lr + coeff * (learning_rate - min_lr)
   
+if wandb_log and master_process:
+  import wandb
+  wandb.init(project=wandb_project, name=wandb_run_name, config=config)
+  

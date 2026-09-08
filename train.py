@@ -23,7 +23,11 @@ dropout = 0.0
 bias    = False
 #------------------------------ config-2 ---------------------------------------
 init_from = 'scratch'
-#------------------------------ adamW optimizer ---------------------------------------
+#------------------------------ wandb logging ----------------------------------
+wandb_log = False
+wandb_project = 'owt'
+wandb_run_name = 'gpt2'
+#------------------------------ adamW optimizer --------------------------------
 learning_rate = 6e-4 # 0.6000
 max_iters = 600000 
 weight_decay = 1e-1 # 0.1

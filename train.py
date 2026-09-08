@@ -200,3 +200,13 @@ def estimate_loss():
     out[split] = losses.mean()
   model.train()
   return out
+
+def get_lr(it:float) -> float:
+  if it < warmup_iters:
+    return learning_rate * (it + 1) / (warmup_iters + 1)
+  if lr_decayiters < it:
+    return min_lr
+  decay_ratio = (it - warmup_iters) / (lr_decay_iters - warmup_iters)
+  coeff       = 0.5 * (1 + math.cos(math.pi * decay_ratio))
+  return min_lr + coeff * (learning_rate - min_lr)
+  

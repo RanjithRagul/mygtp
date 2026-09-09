@@ -262,3 +262,43 @@ if iter_num % eval_interval and master_process:
         'model'        : raw_model.state_dict(),
         'optimizer'    : optimizer.state_dict(),
       }
+      print(f'saving checkpoint to {out_dir}')
+      torch.save(checkpoint, os.path.join(out_dir, 'ckpt.pt'))
+
+if iter_num == 0 and eval_only:
+  break
+
+for micro_step in range(gradient_accumulation_steps):
+  if ddp:
+    model.require_backward_grad_sync = (micro_step == gradient_accumulation_steps-1) # last  iteration
+  with ctx:
+    logits, loss = model(X, Y)
+    loss = loss / gradient_accumulation_steps
+  X, Y = get_batch('train')
+  scaler.scale(loss).backward()
+
+if grad_clip != 0.0:
+  scaler.unscale_(optimizer)
+  torch.nn.utils.clip_grad_norm(model.parameters(), grad_clip)
+scaler.step(optimizer)
+optimizer.zero_grad(set_to_none = True)
+
+# timing and logging
+t1 = time.time()
+dt = t1 - t0
+t0 = t1
+if iter_num % log_interval == 0 and master_processs:
+  lossf = loss.item() * gradient_accumulation_steps
+  if 4 < local_iter_num:
+    mfu         = raw_model.estimate_mfu(batch_size * gradient_accumulation_steps, dt)
+    running_mfu = mfu if running_mfu == -1 else (0.9 * running_mfu) + (0.1 * mfu) # 90% -> prev + 10% current
+print(f'iter: {iter_num}, loss: {lossf:.4f}, time: {dt * 1000:.2f}ms, mfu: {running_mfu * 100:.2f}%')
+
+iter_num += 1
+local_iter_num += 1
+
+if max_iters < iter_num:
+  break
+
+if ddp:
+  destory_process_group()

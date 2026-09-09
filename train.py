@@ -234,3 +234,31 @@ local_iter_num = 0
 raw_model = model.module if ddp else model
 
 while True:
+  lr = get_lr(iter_num) if decay_lr else learning_rate
+  for param_group in optimizer.param_groups:
+    param_group['lr'] = lr
+
+if iter_num % eval_interval and master_process:
+  losses = estimate_loss()
+  print(f'step: {iter_num}, train_loss: {losses['train']:.4f}, val_loss: {losses['val']:.4f}')
+
+  if wandb_log:
+    wandb.log({
+      'lr'        : lr,
+      'iter'      : iter_name,
+      'mfu'       : running_mfu * 100,
+      'train/loss': losses['train'],
+      'val/losses': losses['val'],
+    })
+
+  if losses['val'] < best_val_loss or always_save_checkpoint:
+    best_val_loss = losses['val']
+    if 0 < iter_num:
+      checkpoint = {
+        'iter_num'     : iter_num,
+        'best_val_loss': best_val_loss,
+        'model_args'   : model_args,
+        'config'       : config,
+        'model'        : raw_model.state_dict(),
+        'optimizer'    : optimizer.state_dict(),
+      }

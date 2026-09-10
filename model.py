@@ -319,9 +319,9 @@ class GPT(nn.Module):
 						self.m[w] = self.v[w] = 0
 						
 					# Gradient history
-					self.m[w] = self.beta1 * self.m[w] + (1 - self.beta1) * g
+					self.m[w] = self.m[w] * self.beta1 + (1 - self.beta1) * g
 					# Squared-gradient history
-					self.v[w] = self.beta2 * self.v[w] + (1 - self.beta2) * g**2
+					self.v[w] = self.v[w] * self.beta2 + (1 - self.beta2) * g**2
 					
 					# Bias correction
 					m_hat = self.m[w] / (1 - self.beta1**self.step)

@@ -7,7 +7,7 @@ from contextlib import nullcontext
 import numpy as np
 import torch
 from torch.nn.parallel import DistributedDataParallel as DDP
-from torch.distributed import init_process_groups, destory_process_group
+from torch.distributed import init_process_group, destory_process_group
 
 from model import GPTConfig, GPT
 #------------------------------ dir --------------------------------------------

@@ -107,9 +107,9 @@ class CausalSelfAttention(nn.Module):
 class MLP(nn.Module):
 	def __init__(self, config:"GPTConfig"):
 		super().__init__()
-		self.c_fc = nn.Linear(config.n_embd, 4*config.n_embd, bias=config.bias) # in_feature = n, out_feature = 4*n
-		self.gelu = nn.GELU()
-		self.c_proj = nn.Linear(4*config.n_embd, config.n_embd, bias=config.bias) # in_feature = 4*n, out_feature = n
+		self.c_fc    = nn.Linear(config.n_embd, 4*config.n_embd, bias=config.bias) # in_feature = n, out_feature = 4*n
+		self.gelu    = nn.GELU()
+		self.c_proj  = nn.Linear(4*config.n_embd, config.n_embd, bias=config.bias) # in_feature = 4*n, out_feature = n
 		self.dropout = nn.Dropout(config.dropout)
 		'''
 		GELU:

@@ -63,7 +63,7 @@ if ddp: # GPU
   master_process = ddp_rank ==  0
   seed_offset = ddp_rank
 
-  assert = gradient_Accumulation % ddp_world_size == 0
+  assert gradient_Accumulation % ddp_world_size == 0
   gradient_accumulation_stes //= ddp_world_size
 else: # CPU
   master_process = True

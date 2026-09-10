@@ -76,8 +76,8 @@ print(f'toeks per iteration will be: {token_per_iter:,}')
 if master_process:
   os.makedirs(out_dir, exist_ok=True)
 
-torch.backend.cuda.matmul.allow_tf32 = True
-torch.backend.cudnn.allow_tf32 = True
+torch.backends.cuda.matmul.allow_tf32 = True
+torch.backends.cudnn.allow_tf32 = True
 device_type = 'cuda' if 'cuda' in device else 'cpu'
 ptdtype     = {
                 'float32'  : torch.float32,

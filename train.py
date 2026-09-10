@@ -150,7 +150,7 @@ elif init_from == 'resume':
   N_unwanter_prefix = len(unwanted_prefix)
   for k in state_dict.keys():
     if k.startswith(unwanted_prefix):
-      state_dict[k[N_unwanted_prefix:] = state_dict.pop(k)
+      state_dict[k[N_unwanted_prefix:]] = state_dict.pop(k)
       
   model.load_state_dict(state_dict)
   iter_num = checkpoint['iter_num']

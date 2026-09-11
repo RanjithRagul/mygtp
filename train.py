@@ -48,7 +48,7 @@ min_lr = 6e-5 # minimum learning rate, should be ~= learning_rate/10 per Chinchi
 #--------------------------------------------------------------------------
 device = 'cuda'
 gradient_Accumulation = 5 * 8
-dtype = 'bfloat16' if torch.cuda.is_available() and torch.cuda.is_b16_supported() else 'float16'
+dtype = 'bfloat16' if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else 'float16'
 #--------------------------------------------------------------------------
 backend = 'nccl' # gloo, etc
 ddp = int(os.environ.get('RANK', -1)) != -1

@@ -361,7 +361,8 @@ class GPT(nn.Module):
 		forward_Pass = 4*T²*H*Q
 		backwark_Pass = 8*T²*H*Q (2 times of forward_Pass)
 		------------------------------------------
-		H * Q => Embedding dimensions
+		embd / H => Q
+		H * Q    => embd
 		'''
 		
 		flops_per_token  = 6*N + 12*L*H*Q*T

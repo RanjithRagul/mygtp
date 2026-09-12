@@ -332,19 +332,17 @@ class GPT(nn.Module):
 					if w not in self.m:
 						self.m[w] = self.v[w] = 0
 						
-					# Momentum: 90% older, 10% current 
+					# Momentum & Squared_Gradient: 90% older, 10% current 
 					self.m[w] = self.m[w] * self.beta1 + (1 - self.beta1) * g
-					# Squared gradient: 90% older, 10% current
 					self.v[w] = self.v[w] * self.beta2 + (1 - self.beta2) * g**2
 					
 					# Bias correction
 					m_hat = self.m[w] / (1 - self.beta1**self.step) 
 					v_hat = self.v[w] / (1 - self.beta2**self.step)
 
-					# Adam
-					w -= m_hat * self.lr / (v_hat.sqrt() + 1e-8)
 					# AdamW
-					w -= w * self.lr * group["weight_decay"]
+					w -= m_hat * self.lr / (v_hat.sqrt() + 1e-8)
+					w -= w     * self.lr * group["weight_decay"]
 	'''
 	
 	def estimate_mfu(self, fwdbwd_per_iter, dt):# need to learn

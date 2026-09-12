@@ -261,13 +261,11 @@ class GPT(nn.Module):
 		sd      = model.state_dict()
 		sd_keys = sd.keys()
 		sd_keys = [k for k in sd_keys if not k.endswith('.attn.bias')] # discard bias, bias mask
-
 		#--------------------------------------------------------
 		# init Hugging face/transformer model
+		# copy it from Hugging face weights to our current model
 		model_hf = GPT2LMHeadModel.from_pretrained(model_type)
 		sd_hf    = model_hf.state_dict()
-		
-		# copy it from Hugging face weights to our current model
 		sd_keys_hf = sd_hf.keys()
 		sd_keys_hf = [k for k in sd_keys_hf if not k.endswith('.attn.bias')]
 		sd_keys_hf = [k for k in sd_keys_hf if not k.endswith('.attn.masked_bias')]
